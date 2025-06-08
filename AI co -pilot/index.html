@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Project Management Co-Pilot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    input[type="text"], select {
+      padding: 8px;
+      margin-right: 8px;
+      margin-top: 8px;
+      width: 180px;
+    }
+    button {
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .result {
+      background: #fff;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    <img src="https://cdn-icons-png.flaticon.com/512/2920/2920337.png" alt="AI" width="30" />
+    AI Project Management Co-Pilot
+  </h1>
+
+  <div class="section">
+    <h2>Create Project</h2>
+    <input type="text" id="projectId" placeholder="Project ID" />
+    <input type="text" id="projectName" placeholder="Project Name" />
+    <input type="text" id="projectDesc" placeholder="Description" />
+    <button onclick="createProject()">Create</button>
+    <div class="result" id="createProjectResult"></div>
+  </div>
+
+  <div class="section">
+    <h2>Create Task</h2>
+    <input type="text" id="taskId" placeholder="Task ID" />
+    <input type="text" id="taskProjectId" placeholder="Project ID" />
+    <input type="text" id="taskTitle" placeholder="Task Title" />
+    <select id="taskStatus">
+      <option>To-Do</option>
+      <option>In Progress</option>
+      <option>Done</option>
+    </select>
+    <button onclick="createTask()">Create</button>
+    <div class="result" id="createTaskResult"></div>
+  </div>
+
+  <div class="section">
+    <h2>Get Tasks by Project</h2>
+    <input type="text" id="getProjectId" placeholder="Project ID" />
+    <button onclick="getTasks()">Get Tasks</button>
+    <div class="result" id="tasksResult"></div>
+  </div>
+
+  <div class="section">
+    <h2>AI Recommendation</h2>
+    <button onclick="getRecommendation()">Get Recommendation</button>
+    <div class="result" id="recommendationResult"></div>
+  </div>
+
+  <script>
+    const apiBase = 'http://127.0.0.1:8000';
+
+    function createProject() {
+      const data = new URLSearchParams();
+      data.append('id', document.getElementById('projectId').value);
+      data.append('name', document.getElementById('projectName').value);
+      data.append('description', document.getElementById('projectDesc').value);
+
+      fetch(`${apiBase}/create-project`, {
+        method: 'POST',
+        body: data
+      })
+        .then(res => res.json())
+        .then(json => {
+          document.getElementById('createProjectResult').innerText = JSON.stringify(json, null, 2);
+        });
+    }
+
+    function createTask() {
+      const data = new URLSearchParams();
+      data.append('id', document.getElementById('taskId').value);
+      data.append('project_id', document.getElementById('taskProjectId').value);
+      data.append('title', document.getElementById('taskTitle').value);
+      data.append('status', document.getElementById('taskStatus').value);
+
+      fetch(`${apiBase}/create-task`, {
+        method: 'POST',
+        body: data
+      })
+        .then(res => res.json())
+        .then(json => {
+          document.getElementById('createTaskResult').innerText = JSON.stringify(json, null, 2);
+        });
+    }
+
+    function getTasks() {
+      const pid = document.getElementById('getProjectId').value;
+      fetch(`${apiBase}/get-tasks?project_id=${pid}`)
+        .then(res => res.json())
+        .then(json => {
+          document.getElementById('tasksResult').innerText = JSON.stringify(json, null, 2);
+        });
+    }
+
+    function getRecommendation() {
+      fetch(`${apiBase}/get-recommendation`)
+        .then(res => res.json())
+        .then(json => {
+          document.getElementById('recommendationResult').innerText = JSON.stringify(json, null, 2);
+        });
+    }
+  </script>
+</body>
+</html>
